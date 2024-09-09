@@ -16,8 +16,8 @@ op.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(service=ser, options=op)
 
 # 날짜 설정
-start_date = datetime.strptime("2024.09.08", "%Y.%m.%d")
-end_date = datetime.strptime("2024.09.01", "%Y.%m.%d")
+start_date = datetime.strptime("2024.9.8", "%Y.%m.%d")
+end_date = datetime.strptime("2024.9.1", "%Y.%m.%d")
 
 # 수집한 정보를 저장하는 리스트
 c_gall_no_list = []
@@ -31,7 +31,7 @@ reply_date = []
 
 # 기본 URL
 BASE = "http://gall.dcinside.com"
-start_page = 1000
+start_page = 151
 Flag = True
 
 while Flag:
@@ -55,12 +55,19 @@ while Flag:
     if not article_list:
         continue
 
+    # 페이지 소스에서 날짜를 추출하고 로그에 출력
     date_text = article_list[-1].find("td", {"class": "gall_date"}).text
-    date = "20" + date_text
+    print(f"Extracted date text: {date_text}")
+
     try:
-        contents_date = datetime.strptime(date, "%Y.%m.%d")
-    except ValueError:
-        print(f"Date format error: {date}")
+        if len(date_text) == 7:  # Format like '2009.03'
+            date_text = date_text + ".01"  # Assume the first day of the month
+        print(f"Adjusted date text: {date_text}")  # Adjusted date text 출력
+        contents_date = datetime.strptime(date_text, "%Y.%m.%d")
+        print(f"Parsed contents_date: {contents_date}")  # Parsed 날짜 출력
+    except ValueError as e:
+        print(f"Date format error: {date_text}")
+        print(f"Error details: {e}")  # 오류 세부사항 출력
         continue
 
     if start_date < contents_date:
