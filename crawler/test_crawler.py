@@ -8,10 +8,9 @@ from urllib.parse import urljoin
 # 로그 설정
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def crawl_and_save(start_page, end_page, output_file):
+def crawl_and_save(start_page, end_page, output_file, keyword):
     base_url = 'https://cyphers.nexon.com/article/tip?page='
     base_article_url = 'https://cyphers.nexon.com/'  # 상대 URL을 절대 URL로 변환하기 위한 기본 URL
-    keyword = '탱커'.lower()  # 원하는 키워드 설정 (소문자로 변환)
     
     with open(output_file, 'a', encoding='utf-8') as file:  # 'a' 모드로 파일 열기 (추가 모드)
         for page_number in range(start_page, end_page + 1):
@@ -54,11 +53,12 @@ def crawl_and_save(start_page, end_page, output_file):
 
 def main():
     # 페이지 범위와 출력 파일 설정
+    keyword = input("어느것을 가져올래요 ? :")
     start_page = 1
     end_page = 200  # 예를 들어 5페이지까지 크롤링
-    output_file = 'found_urls.txt'
+    output_file = f'crawlerData/{keyword}.txt'
     print('크롤링 작업 시작')
-    crawl_and_save(start_page, end_page, output_file)
+    crawl_and_save(start_page, end_page, output_file, keyword)
     print('크롤링 작업 완료')
 
 # 주기적으로 크롤링을 수행합니다.
