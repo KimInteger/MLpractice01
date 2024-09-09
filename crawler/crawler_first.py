@@ -1,49 +1,25 @@
 import requests
+import json
 from bs4 import BeautifulSoup
-import re
 
-# 특정 키워드와 도메인
-keyword = "사이퍼즈"
-base_url = "https://search.naver.com"
-params = {
-    'where': 'blog',
-    'query': keyword,
-}
+url = "https://www.naver.com"
+response = requests.get(url)
+html_content = response.text
 
-def fetch_page(url, params):
-    try:
-        response = requests.get(url, params=params)
-        response.raise_for_status()
-        return response.text
-    except requests.RequestException as e:
-        print(f"Error fetching page: {e}")
-        return None
+soup = BeautifulSoup(html_content, 'html.parser')
 
-def parse_page(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    urls = []
-    # 블로그 글의 링크를 찾는 CSS 선택자를 사용합니다.
-    for a_tag in soup.select('.api_txt_lines.total_tit'):
-        href = a_tag.get('href')
-        if href:
-            urls.append(href)
-    return urls
+keyword = "news"
 
-def save_urls_to_file(urls, filename):
-    with open(filename, 'w') as file:
-        for url in urls:
-            file.write(url + '\n')
-
-def main():
-    print("Fetching page...")
-    html = fetch_page(base_url, params)
-    if html:
-        print("Parsing page...")
-        urls = parse_page(html)
-        print(f"Found {len(urls)} URLs.")
-        print("Saving URLs to file...")
-        save_urls_to_file(urls, 'urls.txt')
-        print("Finished. URLs saved to 'urls.txt'.")
-
-if __name__ == "__main__":
-    main()
+data = []
+for elemnets in soup.find_all(text=True):
+    if keyword.lower() in elemnets.lower():
+        data.append({"content" : elemnets})
+        
+links = soup.find_all('a', href=True)
+for link in links:
+    if keyword.lower() in link.get_text().lower():
+        data.append({"content" : link["href"]})
+        
+with open('output.json','w') as f:
+    json.dump(data, f, indent=4)
+    
