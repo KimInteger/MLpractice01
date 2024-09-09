@@ -10,26 +10,22 @@ def get_llama_response(question):
     data = {
         'model': 'llama3.1',
         'prompt': question,
-        'stream': True
+        'stream': False  # 스트리밍을 비활성화합니다.
     }
 
     print(f"보내는 데이터: {data}")
 
     try:
-        response = requests.post(API_URL, headers=headers, json=data, stream=True)
+        response = requests.post(API_URL, headers=headers, json=data)
         response.raise_for_status()
         
         print(f"응답 상태 코드: {response.status_code}")
         
-        full_response = ""
-        for line in response.iter_lines():
-            if line:
-                json_response = json.loads(line)
-                print(f"응답 데이터: {json_response}")
-                if 'response' in json_response:
-                    full_response += json_response['response']
-                if json_response.get('done', False):
-                    break
+        json_response = response.json()
+        print(f"응답 데이터: {json_response}")
+        
+        # 'response' 키에서 전체 응답을 추출합니다.
+        full_response = json_response.get('response', '')
         
         return full_response.strip()
         
