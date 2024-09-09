@@ -31,9 +31,27 @@ reply_id = []
 reply_content = []
 reply_date = []
 
+# 기존에 저장된 데이터를 불러오는 함수
+def load_existing_data(contents_file="contents.csv", reply_file="reply.csv"):
+    try:
+        contents_df = pd.read_csv(contents_file, encoding='utf8')
+        reply_df = pd.read_csv(reply_file, encoding='utf8')
+        return contents_df, reply_df
+    except FileNotFoundError:
+        return pd.DataFrame(), pd.DataFrame()
+
+# 기존 데이터를 불러오기
+contents_df, reply_df = load_existing_data()
+
+# 기존 데이터에서 id 리스트를 가져옴
+if not contents_df.empty:
+    c_gall_no_list = contents_df['id'].tolist()
+if not reply_df.empty:
+    gall_no_list = reply_df['id'].tolist()
+
 # 기본 URL
 BASE = "http://gall.dcinside.com"
-start_page = 152
+start_page = 200
 Flag = True
 
 while Flag:
@@ -116,11 +134,13 @@ while Flag:
 
                 c_date = "20" + date_text
 
+                # 데이터를 리스트에 추가
                 c_gall_no_list.append(gall_id)
                 title_list.append(title)
                 contents_list.append(contents)
                 contents_date_list.append(c_date)
 
+                # 댓글 처리
                 reply_no = contents_soup.find_all("li", {"class": "ub-content"})
                 if reply_no:
                     for r in reply_no:
@@ -137,23 +157,30 @@ while Flag:
                             print(f"Error processing reply: {e}")
                             continue
 
+    # 크롤링한 데이터를 주기적으로 저장
+    contents_temp_df = pd.DataFrame({
+        "id": c_gall_no_list,
+        "title": title_list,
+        "contents": contents_list,
+        "date": contents_date_list
+    })
+
+    reply_temp_df = pd.DataFrame({
+        "id": gall_no_list,
+        "reply_id": reply_id,
+        "reply_content": reply_content,
+        "reply_date": reply_date
+    })
+
+    # 기존 데이터와 병합 후 저장
+    contents_df = pd.concat([contents_df, contents_temp_df]).drop_duplicates(subset='id')
+    reply_df = pd.concat([reply_df, reply_temp_df]).drop_duplicates(subset=['id', 'reply_id'])
+
+    # CSV 파일로 저장
+    contents_df.to_csv("contents.csv", encoding='utf8', index=False)
+    reply_df.to_csv("reply.csv", encoding='utf8', index=False)
+
+    # 다음 페이지로 넘어가기
     start_page += 1
-
-contents_df = pd.DataFrame({
-    "id": c_gall_no_list,
-    "title": title_list,
-    "contents": contents_list,
-    "date": contents_date_list
-})
-
-reply_df = pd.DataFrame({
-    "id": gall_no_list,
-    "reply_id": reply_id,
-    "reply_content": reply_content,
-    "reply_date": reply_date
-})
-
-contents_df.to_csv("contents.csv", encoding='utf8', index=False)
-reply_df.to_csv("reply.csv", encoding='utf8', index=False)
 
 print("Data collection completed and files saved.")
