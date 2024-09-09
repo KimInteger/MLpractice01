@@ -4,6 +4,7 @@ import schedule
 import time
 import logging
 from urllib.parse import urljoin
+import os
 
 # 로그 설정
 logging.basicConfig(filename='crawler.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -12,6 +13,8 @@ def crawl_and_save(start_page, end_page, output_file, keyword):
     base_url = 'https://cyphers.nexon.com/article/tip?page='
     base_article_url = 'https://cyphers.nexon.com/'  # 상대 URL을 절대 URL로 변환하기 위한 기본 URL
     
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
     with open(output_file, 'a', encoding='utf-8') as file:  # 'a' 모드로 파일 열기 (추가 모드)
         for page_number in range(start_page, end_page + 1):
             url = base_url + str(page_number)
@@ -29,7 +32,7 @@ def crawl_and_save(start_page, end_page, output_file, keyword):
                 print(f'페이지 {page_number}에서 링크 추출 중...')  # 링크 추출 중 출력
                 for article in articles:
                     title = article.get('title', '').strip().lower()  # title 속성값을 소문자로 변환
-                    if keyword in title:  # '탱커' 키워드가 title에 포함된 경우
+                    if keyword in title: 
                         link = article['href']
                         # 상대 URL을 절대 URL로 변환
                         if link.startswith('/'):
@@ -55,7 +58,7 @@ def main():
     # 페이지 범위와 출력 파일 설정
     keyword = input("어느것을 가져올래요 ? :")
     start_page = 1
-    end_page = 200  # 예를 들어 5페이지까지 크롤링
+    end_page = 200  
     output_file = f'crawlerData/{keyword}.txt'
     print('크롤링 작업 시작')
     crawl_and_save(start_page, end_page, output_file, keyword)
