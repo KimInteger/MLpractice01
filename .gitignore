@@ -3,3 +3,5 @@ kiminteger/
 crawler/crawlerData/*
 
 crawler/crawler.log
+
+.env*
