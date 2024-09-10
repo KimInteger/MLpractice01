@@ -18,7 +18,7 @@ op.add_argument("--disable-dev-shm-usage")
 driver = webdriver.Chrome(service=ser, options=op)
 
 # 날짜 설정
-start_date = datetime.strptime("2024.09.08", "%Y.%m.%d")
+start_date = datetime.strptime("2024.09.09", "%Y.%m.%d")
 end_date = datetime.strptime("2024.09.01", "%Y.%m.%d")
 
 # 수집한 정보를 저장하는 리스트
@@ -51,7 +51,7 @@ if not reply_df.empty:
 
 # 기본 URL
 BASE = "http://gall.dcinside.com"
-start_page = 200
+start_page = 150
 Flag = True
 
 while Flag:
