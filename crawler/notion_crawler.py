@@ -1,9 +1,7 @@
 import requests
 import json
 
-# Notion API 키와 데이터베이스 ID
-notion_api_key = "secret_EksS3BwGogvjJQV4S4AdSCIiZ9fOHyZMTuynfl4Kftw"
-database_id = "d43e9b4bbd2649b6845d1809767654c8"
+
 
 # API 요청을 위한 헤더 설정
 headers = {
