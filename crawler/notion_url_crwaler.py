@@ -31,7 +31,7 @@ def crawl_url(url, driver):
 # JSON 데이터를 순회하며 'url'이 있는 객체에 대해 크롤링 수행
 def process_data_and_crawl(data):
     driver = setup_driver()
-    with open('수업내용정리.md', 'w', encoding='utf-8') as file:
+    with open('./crawlerData/작업일지.md', 'w', encoding='utf-8') as file:
         # 'results' 필드에 있는 리스트 안의 객체 순회
         results = data.get('results', [])
         for item in results:
@@ -51,6 +51,6 @@ def process_data_and_crawl(data):
 
 # 메인 실행
 if __name__ == "__main__":
-    data = json_to_python("notion_database_data.json")
+    data = json_to_python("notion_tool_data.json")
     if data:
         process_data_and_crawl(data)
